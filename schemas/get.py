@@ -21,7 +21,10 @@ def lambda_handler(event, context):
     except KeyError:
         return {
             'statusCode': 400,
-            'body': 'Missing event parameter'
+            'headers': {
+                'content-type':'application/json'
+            },
+            'body': '{ \"message\": \"Missing event parameter\" }'
         }
     
     data = data_schema_db.find_one({'team': team, 'event': eventQuery}, {'_id': 0})

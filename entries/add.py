@@ -27,7 +27,10 @@ def lambda_handler(event, context):
     except KeyError:
         return {
             'statusCode': 400,
-            'body': 'No entries provided in body'
+            'headers': {
+                'content-type':'application/json'
+            },
+            'body': '{ \"message\": \"No entries provided in body\" }'
         }
     
     if isinstance(entries, dict):
@@ -38,7 +41,10 @@ def lambda_handler(event, context):
     except KeyError:
         return {
                 'statusCode': 400,
-                'body': 'Badly formatted entry'
+                'headers': {
+                    'content-type':'application/json'
+                },
+                'body': '{ \"message\": \"Badly formatted entry; missing event\" }'
             }
     
     data_schema = data_schema_db.find_one({'team': team, 'event': entryEvent}, {'_id': 0, 'team': 0, 'event': 0})
@@ -47,19 +53,23 @@ def lambda_handler(event, context):
         if not set(['metadata', 'data']) == entry.keys():
             return {
                 'statusCode': 400,
-                'body': 'Badly formatted entry'
+                'headers': {
+                    'content-type':'application/json'
+                },
+                'body': '{ \"message\": \"Badly formatted entry; missing metadata and data fields or extra top-level fields\" }'
+
             }
         if not (verify_entry(entry['metadata'], METADATA_SCHEMA) and verify_entry(entry['data'], data_schema)):
             return {
                 'statusCode': 400,
-                'body': 'Badly formatted entry'
-            } 
-    
-    
-    # TODO: manually set 'team' key in metadata
+                'headers': {
+                    'content-type':'application/json'
+                },
+                'body': '{ \"message\": \"Badly formatted entry; does not follow schemas\" }'
+            }
+        entry['metadata']['team'] = team
     
     entries_db[str(team)].insert_many(entries)
-    
 
     return {
         'statusCode': 200,

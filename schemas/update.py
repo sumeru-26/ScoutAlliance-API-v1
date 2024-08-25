@@ -23,13 +23,19 @@ def lambda_handler(event, context):
     except KeyError:
         return {
             'statusCode': 400,
-            'body': 'No schema provided in body'
+            'headers': {
+                'content-type':'application/json'
+            },
+            'body': '{ \"message\": \"No schema provided in body\" }'
         }
     
     if 'event' not in schema.keys():
         return {
             'statusCode': 400,
-            'body': 'Missing event field in schema'
+            'headers': {
+                'content-type':'application/json'
+            },
+            'body': '{ \"message\": \"Missing event field in schema\" }'
         }
 
     schema['team'] = team
@@ -37,7 +43,10 @@ def lambda_handler(event, context):
     if data_schema_db.find_one_and_replace({'team': team, 'event': schema['event']}, schema, return_document=ReturnDocument.BEFORE) is None:
         return {
             'statusCode': 400,
-            'body': 'You don\'t have a schema for this event; trying using /add instead'
+            'headers': {
+                'content-type':'application/json'
+            },
+            'body': '{ \"message\": \"You don\'t have a schema for this event; trying using /add instead\" }'
         }
 
     return {

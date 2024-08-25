@@ -21,19 +21,28 @@ def lambda_handler(event, context):
     except KeyError:
         return {
             'statusCode': 400,
-            'body': 'No schema provided in body'
+            'headers': {
+                'content-type':'application/json'
+            },
+            'body': '{ \"message\": \"No schema provided in body\" }'
         }
     
     if 'event' not in schema.keys():
         return {
             'statusCode': 400,
-            'body': 'Missing event field in schema'
+            'headers': {
+                'content-type':'application/json'
+            },
+            'body': '{ \"message\": \"Missing event field in schema\" }'
         }
 
     if data_schema_db.find_one({'team': team, 'event': schema['event']}) is not None:
         return {
             'statusCode': 400,
-            'body': 'You already have a schema for this event; try using /update instead'
+            'headers': {
+                'content-type':'application/json'
+            },
+            'body': '{ \"message\": \"You already have a schema for this event; try using /update instead\" }'
         }
     
     schema['team'] = team
