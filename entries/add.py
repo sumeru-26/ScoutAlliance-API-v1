@@ -8,6 +8,7 @@
 
 # comment out above when uploading, only necessary for local development
 
+from time import time
 import json
 
 from db import entries_db, data_schema_db  # noqa: E402
@@ -68,6 +69,7 @@ def lambda_handler(event, context):
                 'body': '{ \"message\": \"Badly formatted entry; does not follow schemas\" }'
             }
         entry['metadata']['team'] = team
+        entry['metadata']['timestamp'] = int(time()*1000)
     
     entries_db[str(team)].insert_many(entries)
 
@@ -92,3 +94,5 @@ def verify_type(val, type):
         return isinstance(val, int)
     elif type == 'str':
         return isinstance(val, str)
+    elif type == 'bool':
+        return isinstance(val, bool)
