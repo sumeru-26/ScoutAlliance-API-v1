@@ -13,6 +13,7 @@ client = MongoClient(uri)
 
 schema_db = client.schemas
 data_schema_db = schema_db.data
+app_schema_db = schema_db.app
 entries_db = client.entries
 security_db = client.security
 keys_db = security_db.keys
