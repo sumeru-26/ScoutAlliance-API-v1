@@ -10,7 +10,7 @@
 
 import json  # noqa: E402
 
-from db import entries_db  # noqa: E402
+from db import entries_db, alliances_db  # noqa: E402
 
 def lambda_handler(event, context):
     
@@ -18,10 +18,19 @@ def lambda_handler(event, context):
 
     query = format_queries(event['queryStringParameters']) if 'queryStringParameters' in event.keys() else {}
 
-    cursor = entries_db[team].find(query, {'_id': 0})
+    if 'alliance' in query.keys() and query['alliance'] in ('true', 'True'):
+        teams_set = set()
+        for alliance in alliances_db.find({'teams': int(team)}, {'_id': 0}):
+            for t in alliance['teams']:
+                teams_set.add(str(t))
+        teams = list(teams_set)
+        query.pop('alliance')
+    else:
+        teams = [team]
+
     data = []
-    for x in cursor:
-        data.append(x)
+    for t in teams:
+        data.extend([x for x in entries_db[t].find(query, {'_id': 0})])
     
     return {
         'statusCode': 200,
