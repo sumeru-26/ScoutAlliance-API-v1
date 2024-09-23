@@ -14,7 +14,7 @@ from db import data_schema_db  # noqa: E402
 
 def lambda_handler(event, context):
 
-    team = event['requestContext']['authorizer']['lambda']['team']  
+    team = event['requestContext']['authorizer']['lambda']['team']
     
     try:
         schema = json.loads(event['body'])
@@ -33,10 +33,19 @@ def lambda_handler(event, context):
             'headers': {
                 'content-type':'application/json'
             },
-            'body': '{ \"message\": \"Missing event field in schema\" }'
+            'body': '{ \"message\": \"Missing \'event\' field in schema\" }'
+        }
+    
+    if 'type' not in schema.keys():
+        return {
+            'statusCode': 400,
+            'headers': {
+                'content-type':'application/json'
+            },
+            'body': '{ \"message\": \"Missing \'type\' field in schema\" }'
         }
 
-    if data_schema_db.find_one({'team': team, 'event': schema['event']}) is not None:
+    if data_schema_db.find_one({'team': team, 'event': schema['event'], 'type': schema['type']}) is not None:
         return {
             'statusCode': 400,
             'headers': {
