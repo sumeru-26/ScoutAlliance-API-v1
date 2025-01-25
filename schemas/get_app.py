@@ -22,7 +22,8 @@ def lambda_handler(event, context):
         return {
             'statusCode': 400,
             'headers': {
-                'content-type':'application/json'
+                'content-type':'application/json',
+                'Access-Control-Allow-Origin': '*'
             },
             'body': '{ \"message\": \"Missing event parameter\" }'
         }
@@ -33,7 +34,8 @@ def lambda_handler(event, context):
         return {
             'statusCode': 400,
             'headers': {
-                'content-type':'application/json'
+                'content-type':'application/json',
+                'Access-Control-Allow-Origin': '*'
             },
             'body': '{ \"message\": \"Missing type parameter\" }'
         }
@@ -43,7 +45,8 @@ def lambda_handler(event, context):
     return {
         'statusCode': 200,
         'headers': {
-            'content-type':'application/json'
+            'content-type':'application/json',
+            'Access-Control-Allow-Origin': '*'
         },
         'body': json.dumps(data)
     }
