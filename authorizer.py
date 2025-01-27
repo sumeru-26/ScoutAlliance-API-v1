@@ -2,11 +2,15 @@ from db import keys_db
 
 
 def lambda_handler(event, context):
-    key = event["headers"]["x-sa-auth-key"]
+    try:
+        key = event["headers"]["x-sa-auth-key"]
+    except KeyError:
+        return generateDeny()
+    
     re = keys_db.find_one({'key': key}, {'_id': 0})
     if not re:
         print('denied')
-        return generateDeny('_')
+        return generateDeny()
     else:
         print('allowed')
         return generateAllow(re['team'])
@@ -20,7 +24,7 @@ def generateAllow(team):
     }
 
 
-def generateDeny(team):
+def generateDeny():
     return {
         'isAuthorized': False
     }
